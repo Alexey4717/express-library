@@ -3,12 +3,16 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const dotenv = require("dotenv");
 
+dotenv.config({ path: "./.env" });
 const mongoose = require("mongoose");
-const dev_db_url =
-  "mongodb+srv://Alexey4717:47174717a@cluster0.nnsg0pv.mongodb.net/locallibrary?retryWrites=true&w=majority";
+const dev_db_url = `mongodb+srv://${process.env.EXPRESS_APP_DEV_DB_URL}/locallibrary?retryWrites=true&w=majority`;
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
-// const mongoDB = 'mongodb://127.0.0.1/my_database';
+console.log(
+  "process.env.EXPRESS_APP_DEV_DB_URL",
+  process.env.EXPRESS_APP_DEV_DB_URL
+);
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;

@@ -9,12 +9,6 @@ const GenreSchema = new Schema({
   }
 })
 
-GenreSchema
-  // .virtual('name')
-  .get(function () {
-    return this.name;
-  })
-
 // Virtual for genre's URL
 GenreSchema
   .virtual('url')

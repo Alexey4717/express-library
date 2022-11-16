@@ -12,6 +12,11 @@ block content
       a(href=val.url) #{val.name}
       if index < book.genre.length - 1
         |,
+  p #[strong Edition:]
+    each val, index in book.edition
+      a(href=val.url) #{val.name}
+      if index < book.edition.length - 1
+        |,
 
   div(style='margin-left:20px;margin-top:20px')
     h4 Copies

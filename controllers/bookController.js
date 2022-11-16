@@ -1,6 +1,7 @@
 const Book = require("../models/book");
 const Author = require("../models/author");
 const Genre = require("../models/genre");
+const Edition = require("../models/edition");
 const BookInstance = require("../models/bookinstance");
 const { body, validationResult } = require("express-validator");
 
@@ -12,22 +13,25 @@ exports.index = function (req, res) {
       book_count: function (callback) {
         Book.countDocuments({}, callback);
         // Pass an empty object as match condition to find all documents of this collection
-        // countDocuments не работает, работает только просто count
       },
       book_instance_count: function (callback) {
-        BookInstance.countDocuments({}, callback);
+        BookInstance.count({}, callback);
       },
       book_instance_available_count: function (callback) {
-        BookInstance.countDocuments({ status: "Available" }, callback);
+        BookInstance.count({ status: "Available" }, callback);
       },
       author_count: function (callback) {
-        Author.countDocuments({}, callback);
+        Author.count({}, callback);
       },
       genre_count: function (callback) {
-        Genre.countDocuments({}, callback);
+        Genre.count({}, callback);
+      },
+      edition_count: (callback) => {
+        Edition.count({}, callback);
       },
     },
-    function (err, results) {
+    function (err, results, next) {
+      if (err) return next(error);
       res.render("index", {
         title: "Local Library Home",
         error: err,
@@ -58,6 +62,7 @@ exports.book_detail = (req, res, next) => {
         Book.findById(req.params.id)
           .populate("author")
           .populate("genre")
+          .populate("edition")
           .exec(callback);
       },
       book_instance(callback) {
@@ -95,6 +100,9 @@ exports.book_create_get = function (req, res) {
       genres(callback) {
         Genre.find(callback);
       },
+      editions(callback) {
+        Edition.find(callback);
+      },
     },
     (err, results) => {
       if (err) {
@@ -104,6 +112,7 @@ exports.book_create_get = function (req, res) {
         title: "Create Book",
         authors: results.authors,
         genres: results.genres,
+        editions: results.editions,
       });
     }
   );
@@ -116,6 +125,10 @@ exports.book_create_post = [
     if (!Array.isArray(req.body.genre)) {
       req.body.genre =
         typeof req.body.genre === "undefined" ? [] : [req.body.genre];
+    }
+    if (!Array.isArray(req.body.edition)) {
+      req.body.edition =
+        typeof req.body.edition === "undefined" ? [] : [req.body.edition];
     }
     next();
   },
@@ -135,6 +148,7 @@ exports.book_create_post = [
     .escape(),
   body("isbn", "ISBN must not be empty").trim().isLength({ min: 1 }).escape(),
   body("genre.*").escape(),
+  body("edition.*").escape(),
 
   // Process request after validation and sanitization.
   (req, res, next) => {
@@ -148,6 +162,7 @@ exports.book_create_post = [
       summary: req.body.summary,
       isbn: req.body.isbn,
       genre: req.body.genre,
+      edition: req.body.edition,
     });
 
     if (!errors.isEmpty()) {
@@ -162,6 +177,9 @@ exports.book_create_post = [
           genres(callback) {
             Genre.find(callback);
           },
+          editions(callback) {
+            Edition.find(callback);
+          },
         },
         (err, results) => {
           if (err) {
@@ -174,10 +192,16 @@ exports.book_create_post = [
               genre.checked = "true";
             }
           }
+          for (const edition of results.editions) {
+            if (book.edition.includes(edition._id)) {
+              edition.checked = "true";
+            }
+          }
           res.render("book_form", {
             title: "Create Book",
             authors: results.authors,
             genres: results.genres,
+            editions: results.editions,
             book,
             errors: errors.array(),
           });

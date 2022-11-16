@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+    each edition in list_editions
+      li
+        a(href=edition.url) #{edition.name}
+
+    else
+      li There are no editions.

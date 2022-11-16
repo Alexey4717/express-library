@@ -29,6 +29,13 @@ block content
           div(style='display: inline; padding-right:10px;')
             input.checkbox-input(type='checkbox', name='genre', id=genre._id, value=genre._id, checked=genre.checked )
             label(for=genre._id) #{genre.name}
+    div.form-group
+      label Edition:
+      div
+        for edition in editions
+          div(style='display: inline; padding-right:10px;')
+            input.checkbox-input(type='checkbox', name='edition', id=edition._id, value=edition._id, checked=edition.checked )
+            label(for=edition._id) #{edition.name}
     button.btn.btn-primary(type='submit') Submit
 
   if errors

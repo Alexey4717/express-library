@@ -5,6 +5,7 @@ const router = express.Router();
 const book_controller = require('../controllers/bookController');
 const author_controller = require('../controllers/authorController');
 const genre_controller = require('../controllers/genreController');
+const edition_controller = require('../controllers/editionController');
 const book_instance_controller = require('../controllers/bookinstanceController');
 
 /// BOOK ROUTES МАРШРУТЫ КНИГ///
@@ -89,6 +90,33 @@ router.get('/genre/:id', genre_controller.genre_detail);
 
 // GET request for list of all Genre.
 router.get('/genres', genre_controller.genre_list);
+
+/// EDITION ROUTES ///
+
+// GET request for creating a Edition. NOTE This must come before route that displays Edition (uses id).
+// GET-запрос для создания издания. Должен появиться до маршрута, выводящего издание (( с использованием id)
+router.get('/edition/create', edition_controller.edition_create_get);
+
+//POST request for creating Edition.
+router.post("/edition/create", edition_controller.edition_create_post);
+
+// GET request to delete Edition.
+router.get("/edition/:id/delete", edition_controller.edition_delete_get);
+
+// POST request to delete Edition.
+router.post("/edition/:id/delete", edition_controller.edition_delete_post);
+
+// GET request to update Edition.
+router.get("/edition/:id/update", edition_controller.edition_update_get);
+
+// POST request to update Edition.
+router.post("/edition/:id/update", edition_controller.edition_update_post);
+
+// GET request for one Edition.
+router.get("/edition/:id", edition_controller.edition_detail);
+
+// GET request for list of all Edition.
+router.get("/editions", edition_controller.edition_list);
 
 /// BOOKINSTANCE ROUTES ///
 
