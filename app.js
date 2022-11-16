@@ -9,10 +9,6 @@ dotenv.config({ path: "./.env" });
 const mongoose = require("mongoose");
 const dev_db_url = `mongodb+srv://${process.env.EXPRESS_APP_DEV_DB_URL}/locallibrary?retryWrites=true&w=majority`;
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
-console.log(
-  "process.env.EXPRESS_APP_DEV_DB_URL",
-  process.env.EXPRESS_APP_DEV_DB_URL
-);
 mongoose.connect(mongoDB);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
@@ -20,6 +16,7 @@ db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
+const authRouter = require("./routes/auth");
 const catalogRouter = require("./routes/catalog");
 const compression = require("compression");
 const helmet = require("helmet");
@@ -39,6 +36,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
+app.use("/auth", authRouter);
 app.use("/users", usersRouter);
 app.use("/catalog", catalogRouter);
 app.use(helmet());
